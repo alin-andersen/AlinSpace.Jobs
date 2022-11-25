@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlinSpace.Jobs", "AlinSpace.Jobs\AlinSpace.Jobs.csproj", "{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlinSpace.Jobs.UnitTests", "AlinSpace.Jobs.UnitTests\AlinSpace.Jobs.UnitTests.csproj", "{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6B5DE53-02BC-40C9-8C80-E54D0C022B6E}
+	EndGlobalSection
+EndGlobal
