@@ -7,29 +7,43 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
 
+  AlinSpace_Jobs:
+    name: AlinSpace.Jobs
     runs-on: ubuntu-latest
-
     steps:
-    
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-        
     - name: Restore
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build -c Release --no-restore
-       
-    - name: Test
+      run: dotnet restore AlinSpace.Jobs/AlinSpace.Jobs.csproj
+    - name: Building
+      run: dotnet build AlinSpace.Jobs/AlinSpace.Jobs.csproj --no-restore -c Release
+    - name: Restore
+      run: dotnet restore AlinSpace.Jobs.UnitTests/AlinSpace.Jobs.UnitTests.csproj
+    - name: Tests
       run: dotnet test AlinSpace.Jobs.UnitTests/AlinSpace.Jobs.UnitTests.csproj
-
-    - name: Package
-      run: dotnet pack AlinSpace.Jobs/AlinSpace.Jobs.csproj -o . --no-build
-      
+    - name: Pack
+      run: dotnet pack AlinSpace.Jobs/AlinSpace.Jobs.csproj -c Release -o . 
     - name: Publish
-      run: dotnet nuget push AlinSpace.Jobs.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push AlinSpace.Jobs.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+AlinSpace_Jobs_DryIoc:
+    name: AlinSpace.Jobs.DryIoc
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore
+      run: dotnet restore AlinSpace.Jobs.DryIoc/AlinSpace.Jobs.DryIoc.csproj
+    - name: Building
+      run: dotnet build AlinSpace.Jobs.DryIoc/AlinSpace.Jobs.DryIoc.csproj --no-restore -c Release
+    - name: Pack
+      run: dotnet pack AlinSpace.Jobs.DryIoc/AlinSpace.Jobs.DryIoc.csproj -c Release -o . 
+    - name: Publish
+        run: dotnet nuget push AlinSpace.Jobs.DryIoc.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

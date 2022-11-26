@@ -6,7 +6,7 @@
     <Copyright>Copyright © 2022 Alin Andersen</Copyright>
     <PackageTags>alinspace; alin; space;jobs; job; scheduler; sched; system</PackageTags>
     <RepositoryUrl>https://github.com/onixion/AlinSpace.Jobs</RepositoryUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
