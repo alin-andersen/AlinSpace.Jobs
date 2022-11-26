@@ -30,7 +30,7 @@ jobs:
     - name: Publish
       run: dotnet nuget push AlinSpace.Jobs.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
-AlinSpace_Jobs_DryIoc:
+  AlinSpace_Jobs_DryIoc:
     name: AlinSpace.Jobs.DryIoc
     runs-on: ubuntu-latest
     steps:
