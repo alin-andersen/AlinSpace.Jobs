@@ -1,21 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AlinSpace.Jobs.Triggers;
 
 namespace AlinSpace.Jobs
 {
+    /// <summary>
+    /// Represents the trigger.
+    /// </summary>
     public static class Trigger
     {
+        /// <summary>
+        /// Creates the one shot trigger.
+        /// </summary>
+        /// <param name="delay">Delay.</param>
+        /// <returns>Trigger.</returns>
         public static ITrigger OneShot(TimeSpan? delay = null)
         {
             return new OneShotTrigger(delay);
         }
 
-        public static ITrigger Recurring(Action<IRecurringTriggerConfiguration> configure)
+        /// <summary>
+        /// Creates the recurring trigger.
+        /// </summary>
+        /// <param name="interval">Interval.</param>
+        /// <param name="times">Times.</param>
+        /// <param name="delay">Delay.</param>
+        /// <returns>Trigger.</returns>
+        public static ITrigger Recurring(TimeSpan interval, int? times = null, TimeSpan? delay = null)
         {
+            return new RecurringTrigger(interval, times, delay);
+        }
 
+        /// <summary>
+        /// Creates the recurring trigger.
+        /// </summary>
+        /// <param name="quota">Quota.</param>
+        /// <param name="times">Times.</param>
+        /// <param name="delay">Delay.</param>
+        /// <returns>Trigger.</returns>
+        public static ITrigger Recurring(Quota quota, int? times = null, TimeSpan? delay = null)
+        {
+            return new RecurringTrigger(quota.Interval, times, delay);
         }
     }
 }

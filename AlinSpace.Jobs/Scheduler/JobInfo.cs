@@ -12,19 +12,21 @@ namespace AlinSpace.Jobs
 
         public Type? JobType { get; }
 
-        public IJob? Job { get; set; }
+        public IJob? Job { get; }
 
         public ITrigger Trigger { get; }
 
         #endregion
 
+        #region Locked
+
         public JobState State { get; set; }
 
-        public int NumberOfExecutions { get; private set; }
+        public bool IsRemoved { get; set; }
 
-        public IEnumerable<IJobExecution> Executions => new ReadOnlyCollection<IJobExecution>(executions);
+        public int NumberOfExecutions { get; set; }
 
-        private readonly IList<IJobExecution> executions = new List<IJobExecution>();
+        #endregion
 
         public JobInfo(IJob job, ITrigger trigger, object? key)
         {
@@ -38,12 +40,6 @@ namespace AlinSpace.Jobs
             Key = key;
             Trigger = trigger;
             JobType = jobType;
-        }
-
-        public void AddJobExecution(IJobExecution jobExecution)
-        {
-            NumberOfExecutions += 1;
-            executions.Add(jobExecution);
         }
     }
 }

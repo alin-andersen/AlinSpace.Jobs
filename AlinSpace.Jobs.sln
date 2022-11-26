@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlinSpace.Jobs", "AlinSpace.Jobs\AlinSpace.Jobs.csproj", "{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlinSpace.Jobs", "AlinSpace.Jobs\AlinSpace.Jobs.csproj", "{EDDC16B5-47CC-413C-8E48-5B1E8B55D736}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlinSpace.Jobs.UnitTests", "AlinSpace.Jobs.UnitTests\AlinSpace.Jobs.UnitTests.csproj", "{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlinSpace.Jobs.UnitTests", "AlinSpace.Jobs.UnitTests\AlinSpace.Jobs.UnitTests.csproj", "{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlinSpace.Jobs.Playground", "AlinSpace.Jobs.Playground\AlinSpace.Jobs.Playground.csproj", "{5B2F4B85-D2F7-4B05-974D-CB95C8BA68F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlinSpace.Jobs.DryIoc", "AlinSpace.Jobs.DryIoc\AlinSpace.Jobs.DryIoc.csproj", "{14035BE2-E02D-45A0-A1DA-C350D1E303BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD4A4208-DE4E-4898-96FA-F82073D7C7A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B2F4B85-D2F7-4B05-974D-CB95C8BA68F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B2F4B85-D2F7-4B05-974D-CB95C8BA68F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B2F4B85-D2F7-4B05-974D-CB95C8BA68F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B2F4B85-D2F7-4B05-974D-CB95C8BA68F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14035BE2-E02D-45A0-A1DA-C350D1E303BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14035BE2-E02D-45A0-A1DA-C350D1E303BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14035BE2-E02D-45A0-A1DA-C350D1E303BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14035BE2-E02D-45A0-A1DA-C350D1E303BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

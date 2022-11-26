@@ -1,89 +1,126 @@
-﻿using System.Runtime;
-using System.Runtime.CompilerServices;
-
-namespace AlinSpace.Jobs
+﻿namespace AlinSpace.Jobs
 {
+    /// <summary>
+    /// Represents the scheduler.
+    /// </summary>
     public class Scheduler : IScheduler
     {
-        private readonly IJobExecutor jobExecutor;
         private readonly IJobFactory jobFactory;
+        private readonly JobRegistry jobRegistry;
+        private readonly SchedulerTimer timer;
+        private readonly OneTimeSwitch ots = new();
 
-        public Scheduler(IJobExecutor jobExecutor, IJobFactory? jobFactory = null)
+        private SpinLock @lock = new();
+
+        public IEnumerable<IJobInfo> Jobs => jobRegistry.Jobs;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="jobFactory">Job factory.</param>
+        public Scheduler(IJobFactory? jobFactory = null)
         {
-            this.jobExecutor = jobExecutor ?? new DefaultJobExecutor();
             this.jobFactory = jobFactory ?? new DefaultJobFactory();
-
-            timer = new SchedulerTimer(OnTimerTriggered);
+            jobRegistry = new JobRegistry();
+            timer = new SchedulerTimer(jobRegistry, OnTimerTriggered);
         }
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning => isRunning;
+        private bool isRunning = false;
 
         public void Start()
         {
-            lock(jobExecutor)
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
+
+            var didStart = @lock.LockDelegate(() =>
             {
-                jobExecutor.Start();
-                IsRunning = true;
+                if (isRunning)
+                    return false;
+
+                isRunning = true;
+                return true;
+            });
+
+            if (didStart)
+            {
+                timer.Reload();
             }
         }
 
         public void Stop(bool waitForJobsToFinish = true)
         {
-            lock (jobExecutor)
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
+
+            var didStop = @lock.LockDelegate<bool>(() =>
             {
-                jobExecutor.Stop(waitForJobsToFinish);
-                IsRunning = false;
+                if (!isRunning)
+                    return false;
+
+                isRunning = false;
+                return true;
+            });
+
+            if (didStop)
+            {
+                timer.Pause();
             }
         }
 
         #region Schedule
 
-        public IEnumerable<IJobInfo> Jobs => jobRegistry.Jobs;
 
         public long ScheduleJob(IJob job, ITrigger trigger, IEnumerable<object>? parameters = null, object? key = null)
         {
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
+
             var jobInfo = new JobInfo(
                 job: job,
                 trigger: trigger,
                 key: key);
 
             var id = jobRegistry.Add(jobInfo);
-            UpdateTimer();
+            timer.Reload();
 
             return id;
         }
         
         public long ScheduleJob(Type jobType, ITrigger trigger, IEnumerable<object>? parameters = null, object? key = null)
         {
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
+
             var jobInfo = new JobInfo(
                 jobType: jobType,
                 trigger: trigger,
                 key: key);
 
             var id = jobRegistry.Add(jobInfo);
-            UpdateTimer();
+            timer.Reload();
 
             return id;
         }
 
         public void RemoveJob(long id)
         {
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
 
+            jobRegistry.Remove(id);
         }
 
         public void RemoveAllJobs()
         {
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
 
         }
 
         public void UnpauseJob(long id)
         {
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
 
         }
 
-
         public void PauseJob(long id)
         {
+            ots.ThrowObjectDisposedIfSet<Scheduler>();
 
         }
 
@@ -91,57 +128,65 @@ namespace AlinSpace.Jobs
 
         public void Dispose()
         {
-            timer?.Dispose();
-            timer = null;
+            if (!ots.TrySet())
+                return;
 
-
+            timer.Dispose();
         }
 
         #region Internal
 
-        private SchedulerTimer timer;
-        private readonly JobRegistry jobRegistry = new();
-
-        void UpdateTimer()
-        {
-            var dueTime = jobRegistry.GetGetDueTime();
-            timer.Change(dueTime ?? Timeout.InfiniteTimeSpan);
-        }
-
         private void OnTimerTriggered()
         {
-            var jobInfos = jobRegistry.TakeNextPendingJobs();
+            if (ots.IsSet)
+                return;
+
+#if DEBUG
+            Console.WriteLine($"[Scheduler] Timer triggered.");
+#endif
+            var jobInfos = jobRegistry.BorrowNextJobs();
 
             foreach(var jobInfo in jobInfos)
             {
-
-                Task.Run(() => SupportJobExecution(jobInfo));
-
-                
+#if DEBUG
+                Console.WriteLine($"[Scheduler] Executing job [Id={jobInfo.Id},Key={jobInfo.Key}].");
+#endif
+                Task.Run(() => HandleJobExecution(jobInfo));
             }
         }
 
-        async Task SupportJobExecution(JobInfo jobInfo)
+        async Task HandleJobExecution(JobInfo jobInfo)
         {
-            var job = jobInfo.Job ?? jobFactory.CreateJob(jobInfo.JobType);
-
-            var jobExecution = new JobExection();
-            var jobExecutionContext = new JobExecutionContext(jobInfo, null, default);
-
             try
             {
-                jobExecution.StartTimestamp = DateTimeOffset.UtcNow;
-                
-                await jobExecutor.RunAsync(job, jobExecutionContext);
-                
-                jobExecution.StartTimestamp = DateTimeOffset.UtcNow;
+                var jobExecutionContext = new JobExecutionContext(jobInfo, default);
 
+                try
+                {
+                    //jobExecution.Started = DateTimeOffset.UtcNow;
+
+                    var job = jobInfo.Job ?? jobFactory.CreateJob(jobInfo.JobType);
+
+                    await job.ExecuteAsync(jobExecutionContext);
+
+                    //jobExecution.Stopped = DateTimeOffset.UtcNow;
+                }
+                catch (Exception e)
+                {
+                    //jobExecution.Stopped = DateTimeOffset.UtcNow;
+                    //jobExecution.ThrownException = e;
+                }
+
+                if (ots.IsSet)
+                    return;
+
+                //jobInfo.AddNewExecution(jobExecution);
+                jobRegistry.ReturnBorrowedJob(jobInfo.Id);
+                timer.Reload();
             }
-            catch (Exception e)
+            catch
             {
-                jobExecution.StartTimestamp = DateTimeOffset.UtcNow;
-                jobExecution.ThrownException = e;
-
+                // ignore
             }
         }
 

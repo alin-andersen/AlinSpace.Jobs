@@ -2,19 +2,20 @@
 {
     public class OneShotTrigger : ITrigger
     {
-        public TimeSpan DueTime { get; }
+        private readonly DateTimeOffset timestamp = DateTimeOffset.UtcNow;
+        private readonly TimeSpan dueTime;
 
         public OneShotTrigger(TimeSpan? dueTime = null)
         {
-            DueTime = dueTime ?? TimeSpan.Zero;
+            this.dueTime = dueTime ?? TimeSpan.Zero;
         }
 
-        public TimeSpan GetDueTime(IJobInfo jobInfo)
+        public TimeSpan? GetDueTime(IJobInfo jobInfo)
         {
             if (jobInfo.NumberOfExecutions > 0)
-                return Timeout.InfiniteTimeSpan;
+                return null;
 
-            return DueTime;
+            return timestamp.Add(dueTime) - DateTimeOffset.UtcNow;
         }
     }
 }

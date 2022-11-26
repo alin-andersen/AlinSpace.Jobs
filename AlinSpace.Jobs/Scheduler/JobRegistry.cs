@@ -17,19 +17,31 @@ namespace AlinSpace.Jobs
             jobsSpinLock.LockDelegate(() =>
             {
                 jobs = jobs.Add(jobInfo.Id, jobInfo);
-                jobsWithKey = jobsWithKey.Add(jobInfo.Key ?? "null", jobInfo);
+
+                if (jobInfo.Key != null)
+                {
+                    jobsWithKey = jobsWithKey.Add(jobInfo.Key, jobInfo);
+                }
             });
 
             return jobInfo.Id;
         }
 
-        public void UpdateJobInfo(long id, Action<JobInfo> update)
+
+        public void Remove(long id)
         {
             jobsSpinLock.LockDelegate(() =>
             {
                 if (jobs.TryGetValue(id, out var jobInfo))
                 {
-                    update(jobInfo);
+                    if (jobInfo.State != JobState.Running)
+                    {
+                        jobs = jobs.Remove(id);
+                    }
+                    else
+                    {
+                        jobInfo.IsRemoved = true;
+                    }
                 }
             });
         }
@@ -39,7 +51,7 @@ namespace AlinSpace.Jobs
             return jobs.Values.Select(x => x.Trigger.GetDueTime(x)).OrderBy(x => x).FirstOrDefault();
         }
 
-        IEnumerable<JobInfo> GetPendingJobInfos()
+        IEnumerable<JobInfo> GetNextJobInfos()
         {
             var jobInfos = new List<(JobInfo, TimeSpan)>();
 
@@ -47,10 +59,10 @@ namespace AlinSpace.Jobs
             {
                 var dueTime = jobInfo.Trigger.GetDueTime(jobInfo);
 
-                if (dueTime > TimeSpan.Zero)
+                if (!dueTime.HasValue || dueTime > TimeSpan.Zero)
                     continue;
 
-                jobInfos.Add((jobInfo, dueTime));
+                jobInfos.Add((jobInfo, dueTime.Value));
             }
 
             return jobInfos
@@ -58,38 +70,46 @@ namespace AlinSpace.Jobs
                 .Select(x => x.Item1);
         }
 
-        public IEnumerable<JobInfo> TakeNextPendingJobs()
+        public IEnumerable<JobInfo> BorrowNextJobs()
         {
-            var pendingJobInfos = GetPendingJobInfos();
+            var nextJobs = GetNextJobInfos();
 
-            var acceptedJobInfos = new List<JobInfo>();
+            var borrowedJobs = new List<JobInfo>();
             
-            foreach(var pendingJobInfo in pendingJobInfos)
+            foreach(var nextJob in nextJobs)
             {
-                var acceptedJobInfo = jobsSpinLock.LockDelegate<JobInfo>(() =>
+                var borrowedJob = jobsSpinLock.LockDelegate<JobInfo>(() =>
                 {
-                    if (pendingJobInfo.State != JobState.Waiting)
+                    if (nextJob.State != JobState.Waiting)
                         return null;
 
-                    pendingJobInfo.State = JobState.Running;
-                    return pendingJobInfo;
+                    nextJob.State = JobState.Running;
+                    return nextJob;
                 });
 
-                acceptedJobInfos.Add(acceptedJobInfo);
+                borrowedJobs.Add(borrowedJob);
             }
 
-            return acceptedJobInfos;
+            return borrowedJobs;
         }
 
-        public void JobExecuted(long id)
+        public void ReturnBorrowedJob(long id)
         {
             jobsSpinLock.LockDelegate(() =>
             {
                 if (jobs.TryGetValue(id, out var jobInfo))
                 {
-                    jobInfo.State = JobState.Waiting;
+                    if (jobInfo.IsRemoved)
+                    {
+                        jobs = jobs.Remove(id);
+                    }
+                    else
+                    {
+                        jobInfo.State = JobState.Waiting;
+                    }
                 }
             });
         }
+
     }
 }
