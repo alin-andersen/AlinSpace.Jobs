@@ -28,7 +28,7 @@ jobs:
     - name: Pack
       run: dotnet pack AlinSpace.Jobs/AlinSpace.Jobs.csproj -c Release -o . 
     - name: Publish
-        run: dotnet nuget push AlinSpace.Jobs.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push AlinSpace.Jobs.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
 AlinSpace_Jobs_DryIoc:
     name: AlinSpace.Jobs.DryIoc
@@ -46,4 +46,4 @@ AlinSpace_Jobs_DryIoc:
     - name: Pack
       run: dotnet pack AlinSpace.Jobs.DryIoc/AlinSpace.Jobs.DryIoc.csproj -c Release -o . 
     - name: Publish
-        run: dotnet nuget push AlinSpace.Jobs.DryIoc.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push AlinSpace.Jobs.DryIoc.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
