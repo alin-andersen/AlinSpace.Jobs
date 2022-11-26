@@ -1,16 +1,19 @@
 <img src="https://github.com/onixion/AlinSpace.Jobs/blob/main/Assets/Icon.png" width="200" height="200">
 
-# AlinSpace.Commands
-[![NuGet version (AlinSpace.Commands)](https://img.shields.io/nuget/v/AlinSpace.Commands.svg?style=flat-square)](https://www.nuget.org/packages/AlinSpace.Commands/)
+# AlinSpace.Jobs
+[![NuGet version (AlinSpace.Jobs)](https://img.shields.io/nuget/v/AlinSpace.Jobs.svg?style=flat-square)](https://www.nuget.org/packages/AlinSpace.Jobs/)
 
-An asynchronous command and command manager implementation.
+A clean and simple job scheduler.
 
-[NuGet package](https://www.nuget.org/packages/AlinSpace.Commands/)
+[AlinSpace.Jobs NuGet package](https://www.nuget.org/packages/AlinSpace.Jobs/)
 
 # Why?
 
 I needed a **clean and simple** job scheduler for my purposes.
-I tried Quartz, but I don't like some design choices (ported from the Java world) and I had issues with it.
+
+I tried **Quartz.NET**, but I don't like some design choices (it was ported from the Java world) and I had issues using it.
+
+**Hangfire** was not too bad, but I do not like that they have a *free* and *pro* version.
 
 # Features
 
@@ -19,12 +22,16 @@ I tried Quartz, but I don't like some design choices (ported from the Java world
     - **Recurring**: Execute the job multiple times in a fixed interval.
         - **Quota**: Define the interval using a quota (e.g. 5 times in 5 months).
 
-# Maybe Features
+## Maybe Features
 
 - **Persistent jobs**: Save the execution details of the jobs persistent.
 
+# Packages
 
-## Examples
+- **AlinSpace.Jobs**: Main package
+- **AlinSpace.Jobs.DryIoc**: Job factory for *DryIoc*.
+
+# Examples
 
 ```csharp
 // Create the scheduler.
