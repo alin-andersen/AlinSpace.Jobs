@@ -65,18 +65,6 @@
         /// </summary>
         void RemoveAllJobs();
 
-        /// <summary>
-        /// Unpauses the job.
-        /// </summary>
-        /// <param name="id">Job ID.</param>
-        void UnpauseJob(long id);
-
-        /// <summary>
-        /// Pauses the job.
-        /// </summary>
-        /// <param name="id">Job ID.</param>
-        void PauseJob(long id);
-
         #endregion
     }
 }

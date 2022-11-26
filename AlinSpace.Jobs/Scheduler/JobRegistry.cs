@@ -27,7 +27,6 @@ namespace AlinSpace.Jobs
             return jobInfo.Id;
         }
 
-
         public void Remove(long id)
         {
             jobsSpinLock.LockDelegate(() =>
@@ -41,6 +40,24 @@ namespace AlinSpace.Jobs
                     else
                     {
                         jobInfo.IsRemoved = true;
+                    }
+                }
+            });
+        }
+
+        public void RemoveAll()
+        {
+            jobsSpinLock.LockDelegate(() =>
+            {
+                foreach(var job in jobs.Values)
+                {
+                    if (job.State != JobState.Running)
+                    {
+                        jobs = jobs.Remove(job.Id);
+                    }
+                    else
+                    {
+                        job.IsRemoved = true;
                     }
                 }
             });

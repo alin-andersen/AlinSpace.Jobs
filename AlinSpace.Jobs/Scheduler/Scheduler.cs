@@ -107,7 +107,7 @@
         public void RemoveJob(long id)
         {
             ots.ThrowObjectDisposedIfSet<Scheduler>();
-
+            
             jobRegistry.Remove(id);
         }
 
@@ -115,18 +115,7 @@
         {
             ots.ThrowObjectDisposedIfSet<Scheduler>();
 
-        }
-
-        public void UnpauseJob(long id)
-        {
-            ots.ThrowObjectDisposedIfSet<Scheduler>();
-
-        }
-
-        public void PauseJob(long id)
-        {
-            ots.ThrowObjectDisposedIfSet<Scheduler>();
-
+            jobRegistry.RemoveAll();
         }
 
         #endregion

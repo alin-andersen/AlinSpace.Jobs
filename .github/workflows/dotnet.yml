@@ -1,0 +1,35 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build -c Release --no-restore
+       
+    - name: Test
+      run: dotnet test AlinSpace.Jobs.UnitTests/AlinSpace.Jobs.UnitTests.csproj
+
+    - name: Package
+      run: dotnet pack AlinSpace.Jobs/AlinSpace.Jobs.csproj -o . --no-build
+      
+    - name: Publish
+      run: dotnet nuget push AlinSpace.Jobs.*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
