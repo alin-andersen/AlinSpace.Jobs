@@ -18,8 +18,14 @@
         /// <summary>
         /// Stops the scheduler.
         /// </summary>
-        /// <param name="waitForJobsToFinish"></param>
+        /// <param name="waitForJobsToFinish">Wait for jobs to finish.</param>
         void Stop(bool waitForJobsToFinish = true);
+
+        /// <summary>
+        /// Stops the scheduler asynchronously.
+        /// </summary>
+        /// <param name="waitForJobsToFinish">Wait for jobs to finish.</param>
+        Task StopAsync(bool waitForJobsToFinish = true);
 
         #region Schedule
 

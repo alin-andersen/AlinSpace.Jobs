@@ -66,6 +66,11 @@
             }
         }
 
+        public async Task StopAsync(bool waitForJobsToFinish = true)
+        { 
+        
+        }
+
         #region Schedule
 
 
