@@ -1,6 +1,9 @@
 ﻿namespace AlinSpace.Jobs
 {
-    internal class JobExecutionsTracker : IDisposable
+    /// <summary>
+    /// Represents the job execution tracker.
+    /// </summary>
+    internal class JobExecutionTracker : IDisposable
     {
         private readonly OneTimeSwitch ots = new();
         private readonly ManualResetEventSlim manualResetEventSlim = new ManualResetEventSlim();
@@ -15,9 +18,12 @@
             manualResetEventSlim.Dispose();
         }
 
+        /// <summary>
+        /// Called before job execution.
+        /// </summary>
         public void JobExecutionStarted()
         {
-            ots.ThrowObjectDisposedIfSet<JobExecutionsTracker>();
+            ots.ThrowObjectDisposedIfSet<JobExecutionTracker>();
 
             @lock.LockDelegate(() =>
             {
@@ -26,9 +32,12 @@
             });
         }
 
+        /// <summary>
+        /// Called after job execution.
+        /// </summary>
         public void JobExecutionStopped()
         {
-            ots.ThrowObjectDisposedIfSet<JobExecutionsTracker>();
+            ots.ThrowObjectDisposedIfSet<JobExecutionTracker>();
 
             @lock.LockDelegate(() =>
             {
@@ -44,9 +53,12 @@
             });
         }
 
+        /// <summary>
+        /// Wait for job executions to finish.
+        /// </summary>
         public void WaitForJobsToFinishExecution()
         {
-            ots.ThrowObjectDisposedIfSet<JobExecutionsTracker>();
+            ots.ThrowObjectDisposedIfSet<JobExecutionTracker>();
 
             manualResetEventSlim.Wait();
         }

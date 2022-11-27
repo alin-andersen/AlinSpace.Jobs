@@ -10,7 +10,7 @@
         private readonly OneTimeSwitch ots = new();
 
         private readonly JobRegistry jobRegistry;
-        private readonly JobExecutionsTracker jobExecutionsTracker;
+        private readonly JobExecutionTracker jobExecutionsTracker;
         private readonly SchedulerTimer timer;
 
         private SpinLock @lock = new();
@@ -25,7 +25,7 @@
         {
             this.jobFactory = jobFactory ?? new DefaultJobFactory();
             jobRegistry = new JobRegistry();
-            jobExecutionsTracker = new JobExecutionsTracker();
+            jobExecutionsTracker = new JobExecutionTracker();
             timer = new SchedulerTimer(jobRegistry, OnTimerTriggered);
         }
 
@@ -184,7 +184,7 @@
 #if DEBUG
             Console.WriteLine($"[Scheduler] Timer triggered.");
 #endif
-            var jobInfos = jobRegistry.BorrowNextJobs();
+            var jobInfos = jobRegistry.LockNextJobs();
 
             foreach(var jobInfo in jobInfos)
             {
@@ -216,14 +216,19 @@
                 //jobExecution.Stopped = DateTimeOffset.UtcNow;
                 //jobExecution.ThrownException = e;
             }
+            finally
+            {
+                jobInfo.NumberOfExecutions += 1;
+
+                //jobInfo.AddNewExecution(jobExecution);
+                jobRegistry.UnlockJob(jobInfo.Id);
+
+                jobExecutionsTracker.JobExecutionStopped();
+            }
 
             if (ots.IsSet)
                 return;
 
-            //jobInfo.AddNewExecution(jobExecution);
-            jobRegistry.ReturnBorrowedJob(jobInfo.Id);
-
-            jobExecutionsTracker.JobExecutionStopped();
             timer.Reload();
         }
 

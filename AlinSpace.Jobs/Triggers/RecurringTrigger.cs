@@ -1,5 +1,8 @@
 ﻿namespace AlinSpace.Jobs.Triggers
 {
+    /// <summary>
+    /// Represents the recurring trigger.
+    /// </summary>
     public class RecurringTrigger : ITrigger
     {
         private readonly DateTimeOffset timestamp = DateTimeOffset.UtcNow;
@@ -7,6 +10,12 @@
         private readonly int? times;
         private readonly TimeSpan? delay;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="interval">Interval.</param>
+        /// <param name="times">Times.</param>
+        /// <param name="delay">Delay.</param>
         public RecurringTrigger(TimeSpan interval, int? times = null, TimeSpan? delay = null)
         {
             this.interval = interval;

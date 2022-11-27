@@ -1,6 +1,9 @@
 ﻿namespace AlinSpace.Jobs
 {
-    public static class JobId
+    /// <summary>
+    /// Represents the job ID.
+    /// </summary>
+    internal static class JobId
     {
         private static long id = 0;
 

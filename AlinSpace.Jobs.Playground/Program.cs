@@ -8,9 +8,10 @@
 
             scheduler.Start();
 
-            scheduler.ScheduleJob<MyJob>(Trigger.Recurring(TimeSpan.FromSeconds(5), times: 5));
-            
-            Thread.Sleep(2000);
+            scheduler.ScheduleJob<JobA>(Trigger.Recurring(TimeSpan.FromSeconds(1), times: 10));
+            scheduler.ScheduleJob<JobB>(Trigger.Recurring(TimeSpan.FromSeconds(1), times: 10));
+
+            Thread.Sleep(100000);
         }
     }
 }

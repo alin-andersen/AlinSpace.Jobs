@@ -2,6 +2,9 @@
 
 namespace AlinSpace.Jobs
 {
+    /// <summary>
+    /// Represents the job registry.
+    /// </summary>
     internal class JobRegistry
     {
         private ImmutableDictionary<long, JobInfo> jobs = ImmutableDictionary<long, JobInfo>.Empty;
@@ -87,15 +90,15 @@ namespace AlinSpace.Jobs
                 .Select(x => x.Item1);
         }
 
-        public IEnumerable<JobInfo> BorrowNextJobs()
+        public IEnumerable<JobInfo> LockNextJobs()
         {
             var nextJobs = GetNextJobInfos();
 
-            var borrowedJobs = new List<JobInfo>();
+            var lockedJobs = new List<JobInfo>();
             
             foreach(var nextJob in nextJobs)
             {
-                var borrowedJob = jobsSpinLock.LockDelegate<JobInfo>(() =>
+                var lockedJob = jobsSpinLock.LockDelegate<JobInfo>(() =>
                 {
                     if (nextJob.State != JobState.Waiting)
                         return null;
@@ -104,13 +107,16 @@ namespace AlinSpace.Jobs
                     return nextJob;
                 });
 
-                borrowedJobs.Add(borrowedJob);
+                if (lockedJob == null)
+                    continue;
+
+                lockedJobs.Add(lockedJob);
             }
 
-            return borrowedJobs;
+            return lockedJobs;
         }
 
-        public void ReturnBorrowedJob(long id)
+        public void UnlockJob(long id)
         {
             jobsSpinLock.LockDelegate(() =>
             {
