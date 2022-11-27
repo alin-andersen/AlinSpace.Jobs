@@ -8,6 +8,8 @@
         private OneTimeSwitch ots = new();
         private SpinLock @lock = new();
 
+        private bool running = false;
+
         public SchedulerTimer(
             JobRegistry jobRegistry,
             Action onTrigger)
@@ -16,22 +18,40 @@
             timer = new Timer(_ => onTrigger());
         }
 
-        void SetToFireIn(TimeSpan dueTime)
+        public bool IsRunning => running;
+
+        public void Start()
         {
-            if (dueTime < TimeSpan.Zero)
-                dueTime = TimeSpan.Zero;
+            ots.ThrowObjectDisposedIfSet<SchedulerTimer>();
 #if DEBUG
-            Console.WriteLine($"[Scheduler] Timer set to fire in {dueTime.TotalSeconds} seconds.");
+            Console.WriteLine($"[Scheduler Timer] Starting timer ...");
 #endif
             @lock.LockDelegate(() =>
             {
-                timer.Change(dueTime, Timeout.InfiniteTimeSpan);
+                running = true;
+            });
+
+            Reload();
+        }
+
+        public void Stop()
+        {
+            ots.ThrowObjectDisposedIfSet<SchedulerTimer>();
+#if DEBUG
+            Console.WriteLine($"[Scheduler Timer] Stopping timer ...");
+#endif
+            @lock.LockDelegate(() =>
+            {
+                running = false;
             });
         }
 
         public void Reload()
         {
             ots.ThrowObjectDisposedIfSet<SchedulerTimer>();
+
+            if (!IsRunning)
+                return;
 
             var dueTime = jobRegistry.GetGetDueTime();
 
@@ -48,12 +68,32 @@
         public void Pause()
         {
             ots.ThrowObjectDisposedIfSet<SchedulerTimer>();
-#if DEBUG
-            Console.WriteLine($"[Scheduler] Timer paused.");
-#endif
+
+            if (!IsRunning)
+                return;
+
             @lock.LockDelegate(() =>
             {
+                if (!running) return;
+#if DEBUG
+                Console.WriteLine($"[Scheduler Timer] Timer paused.");
+#endif
                 timer.Change(Timeout.Infinite, Timeout.Infinite);
+            });
+        }
+
+        void SetToFireIn(TimeSpan dueTime)
+        {
+            if (dueTime < TimeSpan.Zero)
+                dueTime = TimeSpan.Zero;
+
+            @lock.LockDelegate(() =>
+            {
+                if (!running) return;
+#if DEBUG
+                Console.WriteLine($"[Scheduler Timer] Timer set to fire in {dueTime.TotalSeconds} seconds.");
+#endif
+                timer.Change(dueTime, Timeout.InfiniteTimeSpan);
             });
         }
 

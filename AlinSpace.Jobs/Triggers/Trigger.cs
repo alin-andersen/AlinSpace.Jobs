@@ -18,6 +18,17 @@ namespace AlinSpace.Jobs
         }
 
         /// <summary>
+        /// Creates the one shot trigger.
+        /// </summary>
+        /// <param name="time">Time.</param>
+        /// <returns>Trigger.</returns>
+        public static ITrigger OneShot(DateTimeOffset time)
+        {
+            var delay = time.ToUniversalTime() - DateTimeOffset.UtcNow;
+            return new OneShotTrigger(delay);
+        }
+
+        /// <summary>
         /// Creates the recurring trigger.
         /// </summary>
         /// <param name="interval">Interval.</param>

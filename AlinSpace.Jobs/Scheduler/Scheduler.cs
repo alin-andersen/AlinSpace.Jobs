@@ -6,9 +6,12 @@
     public class Scheduler : IScheduler
     {
         private readonly IJobFactory jobFactory;
-        private readonly JobRegistry jobRegistry;
-        private readonly SchedulerTimer timer;
+
         private readonly OneTimeSwitch ots = new();
+
+        private readonly JobRegistry jobRegistry;
+        private readonly JobExecutionsTracker jobExecutionsTracker;
+        private readonly SchedulerTimer timer;
 
         private SpinLock @lock = new();
 
@@ -22,6 +25,7 @@
         {
             this.jobFactory = jobFactory ?? new DefaultJobFactory();
             jobRegistry = new JobRegistry();
+            jobExecutionsTracker = new JobExecutionsTracker();
             timer = new SchedulerTimer(jobRegistry, OnTimerTriggered);
         }
 
@@ -43,7 +47,7 @@
 
             if (didStart)
             {
-                timer.Reload();
+                timer.Start();
             }
         }
 
@@ -62,17 +66,22 @@
 
             if (didStop)
             {
-                timer.Pause();
+                timer.Stop();
+            }
+
+            if (waitForJobsToFinish)
+            {
+#if DEBUG
+                Console.WriteLine($"[Scheduler] Waiting for job executions to finish ...");
+#endif
+                jobExecutionsTracker.WaitForJobsToFinishExecution();
+#if DEBUG
+                Console.WriteLine($"[Scheduler] Job executions finished.");
+#endif
             }
         }
 
-        public async Task StopAsync(bool waitForJobsToFinish = true)
-        { 
-        
-        }
-
         #region Schedule
-
 
         public long ScheduleJob(IJob job, ITrigger trigger, IEnumerable<object>? parameters = null, object? key = null)
         {
@@ -125,7 +134,41 @@
             if (!ots.TrySet())
                 return;
 
-            timer.Dispose();
+            try
+            {
+                Stop();
+            }
+            catch
+            {
+                // ignore
+            }
+
+            try
+            {
+                jobExecutionsTracker.Dispose();
+            }
+            catch
+            {
+                // ignore
+            }
+
+            try
+            {
+                timer.Dispose();
+            }
+            catch
+            {
+                // ignore
+            }
+
+            try
+            {
+                jobRegistry.RemoveAll();
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         #region Internal
@@ -135,6 +178,9 @@
             if (ots.IsSet)
                 return;
 
+            // todo think about thread safety here
+            if (!timer.IsRunning)
+                return;
 #if DEBUG
             Console.WriteLine($"[Scheduler] Timer triggered.");
 #endif
@@ -142,46 +188,43 @@
 
             foreach(var jobInfo in jobInfos)
             {
-#if DEBUG
-                Console.WriteLine($"[Scheduler] Executing job [Id={jobInfo.Id},Key={jobInfo.Key}].");
-#endif
                 Task.Run(() => HandleJobExecution(jobInfo));
             }
         }
 
         async Task HandleJobExecution(JobInfo jobInfo)
         {
+            jobExecutionsTracker.JobExecutionStarted();
+#if DEBUG
+            Console.WriteLine($"[Scheduler] Executing job [Id={jobInfo.Id}] ...");
+#endif
+            var jobExecutionContext = new JobExecutionContext(jobInfo, default);
+
             try
             {
-                var jobExecutionContext = new JobExecutionContext(jobInfo, default);
+                //jobExecution.Started = DateTimeOffset.UtcNow;
 
-                try
-                {
-                    //jobExecution.Started = DateTimeOffset.UtcNow;
+                var job = jobInfo.Job ?? jobFactory.CreateJob(jobInfo.JobType);
 
-                    var job = jobInfo.Job ?? jobFactory.CreateJob(jobInfo.JobType);
 
-                    await job.ExecuteAsync(jobExecutionContext);
+                await job.ExecuteAsync(jobExecutionContext);
 
-                    //jobExecution.Stopped = DateTimeOffset.UtcNow;
-                }
-                catch (Exception e)
-                {
-                    //jobExecution.Stopped = DateTimeOffset.UtcNow;
-                    //jobExecution.ThrownException = e;
-                }
-
-                if (ots.IsSet)
-                    return;
-
-                //jobInfo.AddNewExecution(jobExecution);
-                jobRegistry.ReturnBorrowedJob(jobInfo.Id);
-                timer.Reload();
+                //jobExecution.Stopped = DateTimeOffset.UtcNow;
             }
-            catch
+            catch (Exception e)
             {
-                // ignore
+                //jobExecution.Stopped = DateTimeOffset.UtcNow;
+                //jobExecution.ThrownException = e;
             }
+
+            if (ots.IsSet)
+                return;
+
+            //jobInfo.AddNewExecution(jobExecution);
+            jobRegistry.ReturnBorrowedJob(jobInfo.Id);
+
+            jobExecutionsTracker.JobExecutionStopped();
+            timer.Reload();
         }
 
         #endregion
