@@ -1,4 +1,4 @@
-<img src="https://github.com/onixion/AlinSpace.Jobs/blob/main/Assets/Icon.png" width="200" height="200">
+<img src="https://github.com/alin-andersen/AlinSpace.Jobs/blob/main/Assets/Icon.png" width="200" height="200">
 
 # AlinSpace.Jobs
 [![NuGet version (AlinSpace.Jobs)](https://img.shields.io/nuget/v/AlinSpace.Jobs.svg?style=flat-square)](https://www.nuget.org/packages/AlinSpace.Jobs/)
