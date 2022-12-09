@@ -27,7 +27,7 @@
         /// <param name="times">Times per duration.</param>
         public Quota(TimeSpan duration, int times)
         {
-            Duration = duration;
+            Duration = duration.Duration();
             Times = times;
         }
 
@@ -61,6 +61,7 @@
         /// </summary>
         /// <param name="times">Times per month.</param>
         /// <returns>Quota.</returns>
+        /// <remarks>Uses 31 days for the month.</remarks>
         public static Quota Month(int times)
         {
             return new Quota(
@@ -74,6 +75,7 @@
         /// <param name="months">Duration in months.</param>
         /// <param name="times">Times per months.</param>
         /// <returns>Quota.</returns>
+        /// <remarks>Uses 31 days for the month.</remarks>
         public static Quota Months(int months, int times)
         {
             return new Quota(
@@ -86,6 +88,7 @@
         /// </summary>
         /// <param name="times">Times per year.</param>
         /// <returns>Quota.</returns>
+        /// <remarks>Uses 365 days for the year.</remarks>
         public static Quota Year(int times)
         {
             return new Quota(
@@ -99,6 +102,7 @@
         /// <param name="years">Duration in years.</param>
         /// <param name="times">Times per years.</param>
         /// <returns>Quota.</returns>
+        /// <remarks>Uses 365 days for the year.</remarks>
         public static Quota Years(int years, int times)
         {
             return new Quota(

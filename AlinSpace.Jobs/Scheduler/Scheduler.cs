@@ -55,7 +55,7 @@
         {
             ots.ThrowObjectDisposedIfSet<Scheduler>();
 
-            var didStop = @lock.LockDelegate<bool>(() =>
+            var didStop = @lock.LockDelegate(() =>
             {
                 if (!isRunning)
                     return false;
@@ -92,8 +92,12 @@
                 trigger: trigger,
                 key: key);
 
-            var id = jobRegistry.Add(jobInfo);
-            timer.Reload();
+            var id = @lock.LockDelegate(() =>
+            {
+                var id = jobRegistry.Add(jobInfo);
+                timer.Reload();
+                return id;
+            });
 
             return id;
         }
@@ -107,8 +111,12 @@
                 trigger: trigger,
                 key: key);
 
-            var id = jobRegistry.Add(jobInfo);
-            timer.Reload();
+            var id = @lock.LockDelegate(() =>
+            {
+                var id = jobRegistry.Add(jobInfo);
+                timer.Reload();
+                return id;
+            });
 
             return id;
         }
@@ -178,15 +186,22 @@
             if (ots.IsSet)
                 return;
 
-            // todo think about thread safety here
             if (!timer.IsRunning)
                 return;
 #if DEBUG
             Console.WriteLine($"[Scheduler] Timer triggered.");
 #endif
             var jobInfos = jobRegistry.LockNextJobs();
+#if DEBUG
+            Console.WriteLine($"[Scheduler] Jobs waiting for execution: {jobInfos.Count()}");
+#endif
+            if (jobInfos.Empty())
+            {
+                timer.Reload();
+                return;
+            }
 
-            foreach(var jobInfo in jobInfos)
+            foreach (var jobInfo in jobInfos)
             {
                 Task.Run(() => HandleJobExecution(jobInfo));
             }
@@ -204,7 +219,9 @@
             {
                 //jobExecution.Started = DateTimeOffset.UtcNow;
 
+#pragma warning disable CS8604 // Possible null reference argument.
                 var job = jobInfo.Job ?? jobFactory.CreateJob(jobInfo.JobType);
+#pragma warning restore CS8604 // Possible null reference argument.
 
 
                 await job.ExecuteAsync(jobExecutionContext);
@@ -229,7 +246,7 @@
             if (ots.IsSet)
                 return;
 
-            timer.Reload();
+            @lock.LockDelegate(() => timer.Reload());
         }
 
         #endregion

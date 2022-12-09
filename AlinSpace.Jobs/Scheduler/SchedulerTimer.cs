@@ -53,7 +53,7 @@
             if (!IsRunning)
                 return;
 
-            var dueTime = jobRegistry.GetGetDueTime();
+            var dueTime = jobRegistry.GetDueTime();
 
             if (dueTime.HasValue)
             {

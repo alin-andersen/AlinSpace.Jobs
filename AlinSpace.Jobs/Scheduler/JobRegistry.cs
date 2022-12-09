@@ -66,9 +66,14 @@ namespace AlinSpace.Jobs
             });
         }
 
-        public TimeSpan? GetGetDueTime()
+        public TimeSpan? GetDueTime()
         {
-            return jobs.Values.Select(x => x.Trigger.GetDueTime(x)).OrderBy(x => x).FirstOrDefault();
+            return jobs
+                .Values
+                .Where(x => x.State == JobState.Waiting)
+                .Select(x => x.Trigger.GetDueTime(x))
+                .Where(x => x != null)
+                .OrderBy(x => x).FirstOrDefault();
         }
 
         IEnumerable<JobInfo> GetNextJobInfos()
@@ -100,8 +105,10 @@ namespace AlinSpace.Jobs
             {
                 var lockedJob = jobsSpinLock.LockDelegate<JobInfo>(() =>
                 {
+#pragma warning disable CS8603 // Possible null reference return.
                     if (nextJob.State != JobState.Waiting)
                         return null;
+#pragma warning restore CS8603 // Possible null reference return.
 
                     nextJob.State = JobState.Running;
                     return nextJob;
