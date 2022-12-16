@@ -3,11 +3,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AlinSpace.Jobs" Version="1.0.5" />
+    <PackageReference Include="AlinSpace.Jobs" Version="1.0.6" />
     <PackageReference Include="DryIoc.dll" Version="5.3.0" />
   </ItemGroup>
   <ItemGroup>
