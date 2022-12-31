@@ -19,5 +19,10 @@
         /// Job is running.
         /// </summary>
         Running = 2,
+
+        /// <summary>
+        /// Job has ended and will never execute again.
+        /// </summary>
+        Ended = 3,
     }
 }

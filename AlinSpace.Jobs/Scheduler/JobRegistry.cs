@@ -84,7 +84,13 @@ namespace AlinSpace.Jobs
             {
                 var dueTime = jobInfo.Trigger.GetDueTime(jobInfo);
 
-                if (!dueTime.HasValue || dueTime > TimeSpan.Zero)
+                if (!dueTime.HasValue)
+                {
+                    jobInfo.State = JobState.Ended;
+                    continue;
+                }
+
+                if (dueTime > TimeSpan.Zero)
                     continue;
 
                 jobInfos.Add((jobInfo, dueTime.Value));

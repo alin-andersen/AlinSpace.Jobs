@@ -8,8 +8,10 @@
 
             scheduler.Start();
 
-            scheduler.ScheduleJob<JobA>(Trigger.Recurring(TimeSpan.FromMilliseconds(500), times: 3));
-            scheduler.ScheduleJob<JobB>(Trigger.Recurring(TimeSpan.FromMilliseconds(500), times: 3));
+            scheduler.ScheduleJob<JobA>(Trigger.Recurring(TimeSpan.FromMilliseconds(1), times: 1000));
+            scheduler.ScheduleJob<JobB>(Trigger.Recurring(TimeSpan.FromMilliseconds(2), times: 1000));
+            scheduler.ScheduleJob<JobC>(Trigger.Recurring(TimeSpan.FromMilliseconds(2), times: 1000));
+            scheduler.ScheduleJob<JobD>(Trigger.Recurring(TimeSpan.FromMilliseconds(1), times: 1000));
 
             //while(true)
             //{
@@ -20,7 +22,7 @@
             //        break;
             //}
 
-            Thread.Sleep(1000);
+            Console.ReadLine();
 
             scheduler.Stop(true);
         }

@@ -228,7 +228,7 @@
 
                 //jobExecution.Stopped = DateTimeOffset.UtcNow;
             }
-            catch (Exception e)
+            catch// (Exception e)
             {
                 //jobExecution.Stopped = DateTimeOffset.UtcNow;
                 //jobExecution.ThrownException = e;

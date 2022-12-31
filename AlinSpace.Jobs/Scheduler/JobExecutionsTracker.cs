@@ -6,7 +6,7 @@
     internal class JobExecutionTracker : IDisposable
     {
         private readonly OneTimeSwitch ots = new();
-        private readonly ManualResetEventSlim manualResetEventSlim = new ManualResetEventSlim();
+        private readonly ManualResetEventSlim manualResetEventSlim = new();
         private SpinLock @lock = new();
         private int numberOfExecutions = 0;
 
