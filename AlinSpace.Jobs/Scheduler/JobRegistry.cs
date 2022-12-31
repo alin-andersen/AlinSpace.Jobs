@@ -73,7 +73,8 @@ namespace AlinSpace.Jobs
                 .Where(x => x.State == JobState.Waiting)
                 .Select(x => x.Trigger.GetDueTime(x))
                 .Where(x => x != null)
-                .OrderBy(x => x).FirstOrDefault();
+                .OrderBy(x => x)
+                .FirstOrDefault();
         }
 
         IEnumerable<JobInfo> GetNextJobInfos()
@@ -141,7 +142,15 @@ namespace AlinSpace.Jobs
                     }
                     else
                     {
-                        jobInfo.State = JobState.Waiting;
+                        // optimize this
+                        if (jobInfo.Trigger.GetDueTime(jobInfo) == null)
+                        {
+                            jobInfo.State = JobState.Ended;
+                        }
+                        else
+                        {
+                            jobInfo.State = JobState.Waiting;
+                        }
                     }
                 }
             });

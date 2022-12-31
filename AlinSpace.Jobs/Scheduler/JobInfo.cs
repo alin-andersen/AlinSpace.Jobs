@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace AlinSpace.Jobs
+﻿namespace AlinSpace.Jobs
 {
     internal class JobInfo : IJobInfo
     {
@@ -9,6 +7,8 @@ namespace AlinSpace.Jobs
         public long Id { get; set; }
 
         public object? Key { get; }
+
+        public DateTime CreationTimestamp { get; } = DateTime.UtcNow;
 
         public Type? JobType { get; }
 

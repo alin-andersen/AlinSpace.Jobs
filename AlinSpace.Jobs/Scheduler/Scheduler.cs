@@ -223,7 +223,6 @@
                 var job = jobInfo.Job ?? jobFactory.CreateJob(jobInfo.JobType);
 #pragma warning restore CS8604 // Possible null reference argument.
 
-
                 await job.ExecuteAsync(jobExecutionContext);
 
                 //jobExecution.Stopped = DateTimeOffset.UtcNow;

@@ -51,5 +51,18 @@ namespace AlinSpace.Jobs
         {
             return new RecurringTrigger(quota.Interval, times, delay);
         }
+
+        /// <summary>
+        /// Creates the calendar trigger.
+        /// </summary>
+        /// <param name="configure">Configure.</param>
+        /// <returns>Calendar trigger.</returns>
+        public static ITrigger Calendar(Action<CalendarTriggerBuilder> configure)
+        {
+            var calendarTriggerBuilder = new CalendarTriggerBuilder();
+            configure(calendarTriggerBuilder);
+
+            return calendarTriggerBuilder.Build();
+        }
     }
 }

@@ -24,5 +24,13 @@
         /// Gets the number of executions.
         /// </summary>
         int NumberOfExecutions { get; }
+
+        /// <summary>
+        /// Gets the creation timestamp.
+        /// </summary>
+        /// <remarks>
+        /// UTC.
+        /// </remarks>
+        DateTime CreationTimestamp { get; }
     }
 }
