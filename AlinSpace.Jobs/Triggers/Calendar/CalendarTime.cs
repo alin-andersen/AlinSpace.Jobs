@@ -25,5 +25,34 @@
             TimeOfDay = timeOfDay;
             Utc = utc;
         }
+
+        public IList<DateTimeOffset> Calculate()
+        {
+            var timestamps = new List<DateTimeOffset>();
+
+            var dayOfYear = DayOfYear ?? DayOfYear.All;
+
+            for(int day = 1; day <= 365; day++)
+            {
+                //if (dayOfYear.Day.HasValue)
+                //{
+                //    if (dayOfYear.Day != day)
+                //        continue;
+                //}
+
+                var timeOfDay = TimeOfDay ?? TimeOfDay.Zero;
+
+                var d = new DateTimeOffset(
+                    0, 0, 0,
+                    hour: timeOfDay.Hour,
+                    minute: timeOfDay.Minute,
+                    second: timeOfDay.Second,
+                    offset: TimeSpan.Zero);
+
+
+            }
+
+            return timestamps;
+        }
     }
 }

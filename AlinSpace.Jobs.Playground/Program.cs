@@ -13,10 +13,13 @@
             //scheduler.ScheduleJob<JobC>(Trigger.Recurring(TimeSpan.FromMilliseconds(2), times: 1000));
             scheduler.ScheduleJob<JobD>(Trigger.Recurring(TimeSpan.FromMilliseconds(1), times: 1000));
 
-            scheduler.ScheduleJob<JobD>(Trigger.Calendar(configure =>
-            {
-                configure.OnDaysOfMonth(1, 5, 10);
-            }));
+            //scheduler.ScheduleJob<JobD>(Trigger.EveryDay(TimeSpan.FromMilliseconds(1), times: 1000));
+
+
+            //scheduler.ScheduleJob<JobD>(Trigger.Calendar(configure =>
+            //{
+            //    configure.OnDaysOfMonth(1, 5, 10);
+            //}));
 
             while(true)
             {

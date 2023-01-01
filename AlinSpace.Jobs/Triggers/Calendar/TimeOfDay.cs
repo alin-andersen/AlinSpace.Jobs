@@ -35,14 +35,6 @@
                 millisecond);
         }
 
-        public static TimeOfDay Zero()
-        {
-            return new TimeOfDay(0, 0, 0, 0);
-        }
-
-        public static TimeOfDay Midday()
-        {
-            return new TimeOfDay(12, 0, 0, 0);
-        }
+        public static TimeOfDay Zero { get; } = new TimeOfDay(0, 0, 0, 0);
     }
 }

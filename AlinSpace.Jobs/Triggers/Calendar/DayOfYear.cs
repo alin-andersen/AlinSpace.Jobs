@@ -2,17 +2,24 @@
 {
     public class DayOfYear
     {
-        public int Day { get; }
+        public IEnumerable<int> Days { get; }
 
-        public DayOfYear(int day)
-        {
-            if (day < 1)
-                throw new Exception();
+        //public DayOfYear(IEnumerable<int>? days = null)
+        //{
+        //    if (days != null;l)
+        //    {
 
-            if (day > 365)
-                throw new Exception();
 
-            Day = day;
-        }
+        //        if (day < 1)
+        //            throw new Exception();
+
+        //        if (day > 365)
+        //            throw new Exception();
+        //    }
+
+        //    Day = day;
+        //}
+
+        public static DayOfYear All { get; } = new DayOfYear();
     }
 }

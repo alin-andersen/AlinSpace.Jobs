@@ -13,7 +13,7 @@
         {
             foreach (var dayOfYear in daysOfYear)
             {
-                Times.Add(new CalendarTime(dayOfYear: new DayOfYear(dayOfYear)));
+                //Times.Add(new CalendarTime(dayOfYear: new DayOfYear(dayOfYear)));
             }
 
             return this;
